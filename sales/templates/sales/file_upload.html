@@ -1,0 +1,49 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'sales/styles.css' %}">
+    <style>
+        /* Add any additional styles here */
+    </style>
+    <script>
+        function handleFiles(files) {
+            var fileListContainer = document.getElementById('file-list');
+            fileListContainer.innerHTML = ""; // Clear previous list
+
+            var fileList = document.createElement('ul');
+            for (var i = 0; i < files.length; i++) {
+                var listItem = document.createElement('li');
+                listItem.textContent = files[i].name;
+                fileList.appendChild(listItem);
+            }
+            fileListContainer.appendChild(fileList);
+        }
+    </script>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li class="menu-item"><a href="{% url 'sales_performance' %}">Sales Performance</a></li>
+            <li class="menu-item"><a href="{% url 'file_upload' %}">File Upload</a></li>
+        </ul>
+    </nav>
+    <div id="tab2" class="tab-content active">
+        <form action="{% url 'file_upload' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" name="files" id="fileInput" onchange="handleFiles(this.files)" multiple>
+            <select name="option">
+                <option value="common">Common</option>
+                <option value="unique">Unique</option>
+            </select>
+            <button type="submit">Submit</button>
+        </form>
+        <div id="file-list"></div>
+    </div>
+</body>
+</html>
+

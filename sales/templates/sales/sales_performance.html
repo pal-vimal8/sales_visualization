@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Performance</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'sales/styles.css' %}">
+</head>
+<body>
+    <nav>
+        <ul>
+            <li class="menu-item"><a href="{% url 'sales_performance' %}">Sales Performance</a></li>
+            <li class="menu-item"><a href="{% url 'file_upload' %}">File Upload</a></li>
+        </ul>
+    </nav>
+    <div id="tab1" class="tab-content active">
+        {% for salesperson in salespersons %}
+            <h2>Sales Performance of {{ salesperson.name }}</h2>
+            <div class="chart-container">
+                <canvas id="chart-{{ forloop.counter }}"></canvas>
+            </div>
+        {% endfor %}
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            {% for salesperson in salespersons %}
+                console.log('Months for salesperson {{ salesperson.name }}:', {{ salesperson.months|safe }});
+                console.log('Sales Amounts for salesperson {{ salesperson.name }}:', {{ salesperson.sales_amounts|safe }});
+
+                const ctx{{ forloop.counter }} = document.getElementById('chart-{{ forloop.counter }}');
+                if (ctx{{ forloop.counter }}) {
+                    const ctx{{ forloop.counter }}_ctx = ctx{{ forloop.counter }}.getContext('2d');
+                    new Chart(ctx{{ forloop.counter }}_ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: {{ salesperson.months|safe|default:"[]" }},
+                            datasets: [{
+                                label: 'Sales Amount',
+                                data: {{ salesperson.sales_amounts|safe|default:"[]" }},
+                                backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                borderWidth: 1,
+                                barThickness: 15, // Set the bar thickness
+                                hoverBackgroundColor: 'rgba(75, 192, 192, 0.8)',
+                                hoverBorderColor: 'rgba(75, 192, 192, 1)'
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                x: {
+                                    title: {
+                                        display: true,
+                                        text: 'Months'
+                                    }
+                                },
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: 'Sales Amount'
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            {% endfor %}
+        });
+    </script>
+</body>
+</html>
